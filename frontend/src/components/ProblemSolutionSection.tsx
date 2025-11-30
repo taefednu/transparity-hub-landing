@@ -2,14 +2,14 @@ import { AlertCircle, CheckCircle, ArrowRight, DollarSign } from "lucide-react";
 
 export function ProblemSolutionSection() {
   return (
-    <section id="problem-solution" className="section-padding bg-white relative overflow-hidden">
+    <section id="problem-solution" className="bg-white relative overflow-hidden pb-12 md:pb-28 px-4 md:px-8 pt-[180px] md:pt-[200px]">
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#009F6B]/5 to-transparent rounded-full blur-3xl" />
       
       <div className="container mx-auto max-w-6xl px-4 relative z-10">
         {/* Problem Block */}
         <div className="mb-20">
-          <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
             <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl">
               <AlertCircle className="w-8 h-8 text-white" />
             </div>

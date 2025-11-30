@@ -82,7 +82,7 @@ export default function App() {
             {/* Info */}
             <div className="space-y-2">
               <p className="text-white/90" style={{ fontSize: '1rem' }}>
-                AI500 Hackathon (Agrobank) • 2024
+                AI500 Hackathon (Agrobank) • 2025
               </p>
               <p className="text-white/70" style={{ fontSize: '0.875rem' }}>
                 Делаем финансирование МСБ прозрачным и доступным
@@ -92,7 +92,7 @@ export default function App() {
             {/* Copyright */}
             <div className="pt-6 border-t border-white/10 w-full">
               <p className="text-white/60" style={{ fontSize: '0.875rem' }}>
-                © 2024 Transparity Hub. Все права защищены.
+                © 2025 Transparity Hub. Все права защищены.
               </p>
             </div>
           </div>

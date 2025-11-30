@@ -57,20 +57,16 @@ export function HeroSection() {
             </div>
           </div>
           
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center flex-shrink-0 mb-16 md:mb-24">
             <Button 
-              size="lg"
-              className="bg-[#00c78a] hover:bg-[#00b47a] text-white border-0 shadow-xl hover:shadow-2xl transition-all px-8"
-              style={{ fontSize: '1.125rem' }}
+              className="bg-[#00c78a] hover:bg-[#00b47a] text-white border-0 shadow-xl hover:shadow-2xl transition-all px-6 py-2.5 whitespace-nowrap flex-shrink-0"
               onClick={() => document.getElementById('problem-solution')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Problem → Solution
             </Button>
             <Button 
-              size="lg"
               variant="outline"
-              className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 transition-all px-8"
-              style={{ fontSize: '1.125rem' }}
+              className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 transition-all px-6 py-2.5 whitespace-nowrap flex-shrink-0"
               onClick={() => document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Roadmap & Implementation

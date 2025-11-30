@@ -77,8 +77,7 @@ export function TeamSection() {
                     alt={member.name}
                     className="w-full h-full object-cover"
                     style={member.name === "Амаль Касимов" ? {
-                      transform: 'scale(1.4)',
-                      objectPosition: 'center top'
+                      objectPosition: 'left center'
                     } : {}}
                   />
                 </div>
