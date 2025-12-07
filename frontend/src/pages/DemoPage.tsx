@@ -52,11 +52,11 @@ export function DemoPage() {
                   const container = video.closest('.aspect-video');
                   if (container) {
                     container.innerHTML = `
-                      <div class="flex items-center justify-center h-full text-white">
+                      <div class="flex items-center justify-center h-full text-white p-8">
                         <div class="text-center">
                           <p class="text-lg mb-2">Видео временно недоступно</p>
-                          <p class="text-sm text-gray-400">Файл загружается через Git LFS</p>
-                          <p class="text-xs text-gray-500 mt-2">Пожалуйста, обновите страницу через несколько секунд</p>
+                          <p class="text-sm text-gray-400 mb-4">Vercel не поддерживает Git LFS автоматически</p>
+                          <p class="text-xs text-gray-500">Видео будет доступно после настройки внешнего хостинга</p>
                         </div>
                       </div>
                     `;

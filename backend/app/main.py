@@ -1,5 +1,5 @@
 """Main FastAPI application"""
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import (
     APP_NAME, APP_DESCRIPTION, APP_VERSION,
@@ -13,13 +13,15 @@ app = FastAPI(
     version=APP_VERSION
 )
 
-# CORS configuration
+# CORS configuration - must be added before routers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],  # Allow all origins for now, can be restricted in production
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],  # Allow all methods
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 # Include routers
