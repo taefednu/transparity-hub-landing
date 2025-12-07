@@ -43,29 +43,14 @@ export function DemoPage() {
         <section className="mb-24">
           <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100">
             <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden">
-              <video
-                controls
+              {/* Замените YOUR_VIDEO_ID на ID вашего YouTube видео */}
+              <iframe
                 className="w-full h-full"
-                onError={(e) => {
-                  console.error('Video load error:', e);
-                  const video = e.currentTarget;
-                  const container = video.closest('.aspect-video');
-                  if (container) {
-                    container.innerHTML = `
-                      <div class="flex items-center justify-center h-full text-white p-8">
-                        <div class="text-center">
-                          <p class="text-lg mb-2">Видео временно недоступно</p>
-                          <p class="text-sm text-gray-400 mb-4">Vercel не поддерживает Git LFS автоматически</p>
-                          <p class="text-xs text-gray-500">Видео будет доступно после настройки внешнего хостинга</p>
-                        </div>
-                      </div>
-                    `;
-                  }
-                }}
-              >
-                <source src="/demo-video.mp4" type="video/mp4" />
-                Ваш браузер не поддерживает видео.
-              </video>
+                src="https://www.youtube.com/embed/YOUR_VIDEO_ID?rel=0&modestbranding=1"
+                title="Демонстрация Transparity Hub"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             </div>
           </div>
           <p className="text-center text-sm text-gray-500 mt-4">
