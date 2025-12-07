@@ -42,9 +42,9 @@ export function DemoPage() {
         {/* Video Section */}
         <section className="mb-24">
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <div className="w-full aspect-video rounded-xl overflow-hidden bg-gray-900" style={{ minHeight: '500px' }}>
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-900" style={{ minHeight: '500px' }}>
               <iframe
-                className="w-full h-full"
+                className="absolute inset-0 w-full h-full"
                 src="https://www.youtube.com/embed/5ItLLN_iDa4?rel=0&modestbranding=1"
                 title="Демонстрация Transparity Hub"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
