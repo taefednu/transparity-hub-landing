@@ -25,7 +25,7 @@ export function DemoPage() {
         </div>
       </header>
 
-      <div className="container mx-auto max-w-5xl px-6 pt-24 pb-16">
+      <div className="container mx-auto max-w-6xl px-6 pt-24 pb-16">
         {/* Hero Section */}
         <div className="text-center mb-20">
           <div className="inline-block px-3 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600 mb-6">
@@ -41,8 +41,8 @@ export function DemoPage() {
 
         {/* Video Section */}
         <section className="mb-24">
-          <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100">
-            <div className="w-full aspect-video rounded-xl overflow-hidden bg-gray-900">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div className="w-full aspect-video rounded-xl overflow-hidden bg-gray-900" style={{ minHeight: '500px' }}>
               <iframe
                 className="w-full h-full"
                 src="https://www.youtube.com/embed/5ItLLN_iDa4?rel=0&modestbranding=1"
