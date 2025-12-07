@@ -1,5 +1,5 @@
 {
-  "buildCommand": "git lfs pull && pnpm install && pnpm run build",
+  "buildCommand": "git lfs pull || true && pnpm install && pnpm run build",
   "outputDirectory": "build",
   "framework": "vite",
   "installCommand": "pnpm install",
