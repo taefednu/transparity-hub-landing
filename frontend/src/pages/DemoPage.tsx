@@ -42,14 +42,17 @@ export function DemoPage() {
         {/* Video Section */}
         <section className="mb-24">
           <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100">
-            <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/5ItLLN_iDa4?rel=0&modestbranding=1"
-                title="Демонстрация Transparity Hub"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+              <div className="absolute inset-0 bg-gray-900 rounded-xl overflow-hidden">
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src="https://www.youtube.com/embed/5ItLLN_iDa4?rel=0&modestbranding=1"
+                  title="Демонстрация Transparity Hub"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ border: 'none' }}
+                />
+              </div>
             </div>
           </div>
           <p className="text-center text-sm text-gray-500 mt-4">
