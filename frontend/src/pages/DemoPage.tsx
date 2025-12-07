@@ -46,6 +46,22 @@ export function DemoPage() {
               <video
                 controls
                 className="w-full h-full"
+                onError={(e) => {
+                  console.error('Video load error:', e);
+                  const video = e.currentTarget;
+                  const container = video.closest('.aspect-video');
+                  if (container) {
+                    container.innerHTML = `
+                      <div class="flex items-center justify-center h-full text-white">
+                        <div class="text-center">
+                          <p class="text-lg mb-2">Видео временно недоступно</p>
+                          <p class="text-sm text-gray-400">Файл загружается через Git LFS</p>
+                          <p class="text-xs text-gray-500 mt-2">Пожалуйста, обновите страницу через несколько секунд</p>
+                        </div>
+                      </div>
+                    `;
+                  }
+                }}
               >
                 <source src="/demo-video.mp4" type="video/mp4" />
                 Ваш браузер не поддерживает видео.
