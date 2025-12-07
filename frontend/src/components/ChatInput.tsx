@@ -24,7 +24,13 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Напишите сообщение..."
-        className="flex-1 px-5 py-3 bg-gray-100 rounded-full outline-none focus:ring-2 focus:ring-[#009F6B] focus:bg-white transition-all text-[15px] placeholder:text-gray-400"
+        className="flex-1 h-11 bg-gray-100 rounded-full outline-none focus:ring-2 focus:ring-[#009F6B] focus:bg-white transition-all text-[15px] placeholder:text-gray-400"
+        style={{ 
+          paddingTop: '12px', 
+          paddingBottom: '12px',
+          paddingLeft: '24px',
+          paddingRight: '20px'
+        }}
         disabled={disabled}
       />
       <button

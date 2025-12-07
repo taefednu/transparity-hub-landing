@@ -32,6 +32,7 @@ export function ChatBotWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [usedQuestions, setUsedQuestions] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -63,23 +64,80 @@ export function ChatBotWidget() {
     }
   }, [isOpen]);
 
-  // Reset messages when chat is closed
+  // Reset messages and used questions when chat is closed
   useEffect(() => {
     if (!isOpen) {
       setMessages([]);
+      setUsedQuestions(new Set());
     }
   }, [isOpen]);
 
-  // Scroll to bottom when new message arrives or chat opens
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (isOpen && chatScrollRef.current) {
-      setTimeout(() => {
-        if (chatScrollRef.current) {
-          chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      const scrollToBottom = () => {
+        const container = chatScrollRef.current;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
         }
-      }, 0);
+      };
+
+      // Use multiple attempts to ensure scroll happens
+      requestAnimationFrame(() => {
+        scrollToBottom();
+        setTimeout(scrollToBottom, 50);
+        setTimeout(scrollToBottom, 150);
+      });
     }
   }, [messages, isOpen]);
+
+  // Handle wheel events to prevent page scrolling when scrolling inside chat
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const chatContainer = chatScrollRef.current;
+    const chatWidget = chatContainerRef.current;
+    if (!chatContainer || !chatWidget) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement;
+      
+      // Only handle events inside the chat widget
+      if (!chatWidget.contains(target)) return;
+
+      // Only handle events in the scrollable message area
+      const isInScrollArea = chatContainer.contains(target) || target === chatContainer;
+      if (!isInScrollArea) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+      const canScroll = scrollHeight > clientHeight;
+      
+      // If content doesn't need scrolling, don't block
+      if (!canScroll) return;
+
+      const threshold = 10;
+      const isAtTop = scrollTop <= threshold;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+      const scrollingDown = e.deltaY > 0;
+      const scrollingUp = e.deltaY < 0;
+
+      // Allow page scroll when at boundaries
+      if ((scrollingDown && isAtBottom) || (scrollingUp && isAtTop)) {
+        return;
+      }
+
+      // Block page scroll, but allow native container scroll
+      // НЕ используем preventDefault() - это блокирует нативный скролл контейнера
+      // Используем только stopPropagation() чтобы событие не всплывало на страницу
+      e.stopPropagation();
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel, { capture: true } as EventListenerOptions);
+    };
+  }, [isOpen]);
 
   const saveMessage = (isBot: boolean, text: string, isPurple = false, read = false) => {
     const newMessage: Message = {
@@ -106,6 +164,7 @@ export function ChatBotWidget() {
 
     try {
       const response = await api.sendChatMessage(text);
+      
       if (response.error) {
         saveMessage(
           true,
@@ -115,6 +174,13 @@ export function ChatBotWidget() {
         );
       } else if (response.data) {
         saveMessage(true, response.data.answer, false, true);
+      } else {
+        saveMessage(
+          true,
+          "Получен неожиданный формат ответа. Попробуйте еще раз.",
+          false,
+          true
+        );
       }
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -130,6 +196,8 @@ export function ChatBotWidget() {
   };
 
   const handleQuickAction = (text: string) => {
+    // Mark question as used
+    setUsedQuestions(prev => new Set(prev).add(text));
     sendMessage(text);
   };
 
@@ -137,8 +205,6 @@ export function ChatBotWidget() {
     sendMessage(text);
   };
 
-  // Render through portal to document.body to ensure it's always on top
-  // and positioned relative to the viewport, not parent containers
   if (!mounted || typeof document === 'undefined' || !document.body) {
     return null;
   }
@@ -168,79 +234,48 @@ export function ChatBotWidget() {
               flexDirection: 'column',
               overflow: 'hidden',
             }}
-            className="flex flex-col overflow-hidden"
           >
-            <div className="flex-shrink-0">
+            {/* Header - fixed at top */}
+            <div style={{ flexShrink: 0 }}>
               <ChatHeader onClose={() => {
                 setIsOpen(false);
                 setMessages([]);
               }} />
             </div>
             
+            {/* Messages area - scrollable */}
             <div 
               ref={chatScrollRef}
-              className="flex-1 overflow-y-auto px-4 py-4 bg-[#E5E5E5] chat-scrollbar"
+              className="chat-scrollbar"
               style={{
-                scrollbarWidth: 'auto',
-                scrollbarColor: '#9E9E9E #E5E5E5',
-                overscrollBehavior: 'contain',
-                minHeight: 0,
                 flex: '1 1 0%',
+                minHeight: 0,
                 height: 0,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                padding: '16px',
+                backgroundColor: 'white',
+                position: 'relative',
+                overscrollBehavior: 'contain',
                 touchAction: 'pan-y',
                 WebkitOverflowScrolling: 'touch',
-                position: 'relative',
-              }}
-              onWheelCapture={(e) => {
-                const container = chatScrollRef.current;
-                if (!container) return;
-
-                const { scrollTop, scrollHeight, clientHeight } = container;
-                const canScroll = scrollHeight > clientHeight;
-
-                // Если контент не требует скролла, не блокируем событие
-                if (!canScroll) {
-                  return;
-                }
-
-                const isAtTop = scrollTop <= 0;
-                const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
-                const scrollingDown = e.deltaY > 0;
-                const scrollingUp = e.deltaY < 0;
-
-                // Если скроллим вниз и уже внизу - позволяем странице скроллиться
-                if (scrollingDown && isAtBottom) {
-                  return;
-                }
-
-                // Если скроллим вверх и уже вверху - позволяем странице скроллиться
-                if (scrollingUp && isAtTop) {
-                  return;
-                }
-
-                // Иначе блокируем всплытие события - скролл происходит нативно в контейнере
-                e.stopPropagation();
-                e.preventDefault();
+                scrollbarWidth: 'auto',
+                scrollbarColor: '#9E9E9E #f3f4f6',
               }}
             >
               <style>{`
-                .chat-scrollbar {
-                  scrollbar-width: auto;
-                  scrollbar-color: #9E9E9E #E5E5E5;
-                }
                 .chat-scrollbar::-webkit-scrollbar {
                   width: 12px;
-                  display: block;
                 }
                 .chat-scrollbar::-webkit-scrollbar-track {
-                  background: #E5E5E5;
+                  background: #f3f4f6;
                   border-radius: 6px;
                   margin: 4px 0;
                 }
                 .chat-scrollbar::-webkit-scrollbar-thumb {
                   background-color: #9E9E9E;
                   border-radius: 6px;
-                  border: 2px solid #E5E5E5;
+                  border: 2px solid #f3f4f6;
                   min-height: 30px;
                 }
                 .chat-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -250,10 +285,39 @@ export function ChatBotWidget() {
                   background-color: #616161;
                 }
               `}</style>
-              <div className="space-y-1">
-                {messages.map((message) => (
-                  <ChatMessage key={message.id} message={message} />
-                ))}
+              <div style={{ paddingBottom: '8px' }}>
+                {messages.map((message, index) => {
+                  // Show quick questions after each bot message, excluding already used questions
+                  const showQuickQuestions = message.isBot && 
+                                           !isLoading && 
+                                           index === messages.length - 1; // Only after the last message
+                  
+                  const availableQuestions = QUICK_QUESTIONS.filter(
+                    question => !usedQuestions.has(question.text)
+                  );
+
+                  return (
+                    <div key={message.id}>
+                      <ChatMessage message={message} />
+                      {/* Show quick questions after each bot response, excluding used ones */}
+                      {showQuickQuestions && availableQuestions.length > 0 && (
+                        <div className="flex flex-col gap-2 mt-3 mb-2">
+                          {availableQuestions.map((question, qIndex) => (
+                            <button
+                              key={qIndex}
+                              onClick={() => handleQuickAction(question.text)}
+                              disabled={isLoading}
+                              className="flex items-center gap-1.5 w-full px-3.5 py-2 bg-gray-100 hover:bg-[#009F6B] text-gray-700 hover:text-white rounded-full text-sm transition-colors whitespace-nowrap disabled:opacity-50 text-left"
+                            >
+                              <span>{question.emoji}</span>
+                              <span>{question.text}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 
                 {isLoading && (
                   <motion.div
@@ -278,35 +342,28 @@ export function ChatBotWidget() {
                     </div>
                   </motion.div>
                 )}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} style={{ height: '1px' }} />
               </div>
             </div>
 
-            <div className="px-4 py-3 bg-white border-t border-gray-200 rounded-b-2xl flex-shrink-0">
-              <div className="flex gap-2 mb-3 overflow-x-auto scrollbar-hide" style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                WebkitOverflowScrolling: "touch",
-              }}>
-                {QUICK_QUESTIONS.map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleQuickAction(question.text)}
-                    disabled={isLoading}
-                    className="flex items-center gap-1.5 flex-shrink-0 px-3.5 py-2 bg-gray-100 hover:bg-[#009F6B] text-gray-700 hover:text-white rounded-full text-sm transition-colors whitespace-nowrap disabled:opacity-50"
-                  >
-                    <span>{question.emoji}</span>
-                    <span>{question.text}</span>
-                  </button>
-                ))}
-              </div>
-              
+            {/* Input area - fixed at bottom */}
+            <div 
+              style={{
+                flexShrink: 0,
+                padding: '12px 16px',
+                backgroundColor: 'white',
+                borderTop: '1px solid #e5e7eb',
+                borderBottomLeftRadius: '20px',
+                borderBottomRightRadius: '20px',
+              }}
+            >
               <ChatInput onSend={handleSend} disabled={isLoading} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Toggle button */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}

@@ -184,6 +184,9 @@ Payme, Click, Uzum, банковские API, системы учёта, кре�
 async def chat_with_bot(request: ChatMessageRequest):
     """AI chat endpoint for answering questions about Transparity Hub"""
     try:
+        print(f"Received chat request: {request.message}")
+        print(f"OpenAI API Key present: {bool(OPENAI_API_KEY)}")
+        
         if not OPENAI_API_KEY:
             # Fallback response if OpenAI key is not configured
             fallback_responses = {
@@ -235,8 +238,11 @@ async def chat_with_bot(request: ChatMessageRequest):
     except Exception as e:
         # Fallback on error
         error_message = str(e)
+        print(f"Error in chat endpoint: {error_message}")
+        import traceback
+        traceback.print_exc()
         return {
-            "answer": f"Извините, произошла ошибка при обработке запроса. Попробуйте переформулировать вопрос о платформе Transparity Hub. {error_message if 'rate limit' not in error_message.lower() else ''}",
+            "answer": f"Извините, произошла ошибка при обработке запроса. Попробуйте переформулировать вопрос о платформе Transparity Hub.",
             "source": "fallback"
         }
 
