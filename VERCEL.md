@@ -20,9 +20,9 @@
 
 - **Framework Preset**: `Vite` (или "Other")
 - **Root Directory**: `frontend` ⚠️ **ОБЯЗАТЕЛЬНО!**
-- **Build Command**: `npm run build` (или оставьте по умолчанию)
+- **Build Command**: `pnpm run build` (или оставьте по умолчанию)
 - **Output Directory**: `build` ⚠️ **ОБЯЗАТЕЛЬНО!**
-- **Install Command**: `npm install` (или оставьте по умолчанию)
+- **Install Command**: `pnpm install` (или оставьте по умолчанию)
 
 ### 3. Деплой
 
