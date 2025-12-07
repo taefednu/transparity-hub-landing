@@ -1,0 +1,16 @@
+# FastAPI framework
+fastapi==0.104.1
+
+# ASGI server for FastAPI
+uvicorn[standard]==0.24.0
+
+# Data validation and settings management
+pydantic[email]==2.5.0
+
+# Environment variables management
+python-dotenv==1.0.0
+
+# OpenAI API client
+openai>=1.0.0
+
+

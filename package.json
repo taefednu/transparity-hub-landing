@@ -1,0 +1,19 @@
+{
+  "name": "transparity-hub",
+  "version": "1.0.0",
+  "description": "Transparity Hub - Кредитный Паспорт МСБ для банков и финтеха Узбекистана",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "install:all": "npm install && npm install --workspace=frontend"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+
