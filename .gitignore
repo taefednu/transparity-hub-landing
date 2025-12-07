@@ -48,8 +48,8 @@ Thumbs.db
 *.pem
 .cache/
 
-# Large video files (exceed GitHub 100MB limit)
-demo/*.mp4
-demo/*:Zone.Identifier
-frontend/public/demo-video.mp4
+# Large video files - now using Git LFS
+# demo/*.mp4
+# demo/*:Zone.Identifier
+# frontend/public/demo-video.mp4
 

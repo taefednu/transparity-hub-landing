@@ -70,102 +70,16 @@ export function ChatBotWidget() {
     }
   }, [isOpen]);
 
-  // Scroll to bottom when new message arrives
+  // Scroll to bottom when new message arrives or chat opens
   useEffect(() => {
     if (isOpen && chatScrollRef.current) {
-      // Используем setTimeout чтобы убедиться, что DOM обновился
       setTimeout(() => {
         if (chatScrollRef.current) {
           chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
         }
-      }, 100);
+      }, 0);
     }
   }, [messages, isOpen]);
-
-  // Handle scroll events to prevent page scrolling when scrolling inside chat
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const chatContainer = chatScrollRef.current;
-    const chatWidget = chatContainerRef.current;
-    if (!chatContainer || !chatWidget) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      const target = e.target as HTMLElement;
-      
-      // Check if the event target is inside the chat widget
-      if (!chatWidget.contains(target)) return;
-
-      // Check if the event is specifically on the scrollable container or its children
-      const isInScrollArea = chatContainer.contains(target) || target === chatContainer;
-      if (!isInScrollArea) return;
-
-      // Проверяем, что контейнер действительно может скроллиться
-      const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-      const canScroll = scrollHeight > clientHeight;
-      
-      if (!canScroll) {
-        // Если контент не требует скролла, не блокируем событие
-        return;
-      }
-
-      const isAtTop = scrollTop <= 0;
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5; // небольшой запас
-      const scrollingDown = e.deltaY > 0;
-      const scrollingUp = e.deltaY < 0;
-
-      // If scrolling down and at bottom, allow page scroll
-      if (scrollingDown && isAtBottom) {
-        return;
-      }
-      
-      // If scrolling up and at top, allow page scroll
-      if (scrollingUp && isAtTop) {
-        return;
-      }
-
-      // Otherwise, prevent page scroll
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      
-      // Manually scroll the container
-      chatContainer.scrollTop += e.deltaY;
-    };
-
-    // Также добавляем обработчик прямо на контейнер
-    const handleContainerWheel = (e: WheelEvent) => {
-      const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-      const canScroll = scrollHeight > clientHeight;
-      
-      if (!canScroll) {
-        return;
-      }
-
-      const isAtTop = scrollTop <= 0;
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5;
-      const scrollingDown = e.deltaY > 0;
-      const scrollingUp = e.deltaY < 0;
-
-      if ((scrollingDown && isAtBottom) || (scrollingUp && isAtTop)) {
-        return;
-      }
-
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
-    // Use capture phase to catch events early
-    window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
-    document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
-    chatContainer.addEventListener('wheel', handleContainerWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel, { capture: true } as EventListenerOptions);
-      document.removeEventListener('wheel', handleWheel, { capture: true } as EventListenerOptions);
-      chatContainer.removeEventListener('wheel', handleContainerWheel);
-    };
-  }, [isOpen]);
 
   const saveMessage = (isBot: boolean, text: string, isPurple = false, read = false) => {
     const newMessage: Message = {
@@ -253,7 +167,6 @@ export function ChatBotWidget() {
               display: 'flex',
               flexDirection: 'column',
               overflow: 'hidden',
-              overscrollBehavior: 'contain',
             }}
             className="flex flex-col overflow-hidden"
           >
@@ -273,11 +186,41 @@ export function ChatBotWidget() {
                 overscrollBehavior: 'contain',
                 minHeight: 0,
                 flex: '1 1 0%',
-                height: 0, // Это важно для flex-1
+                height: 0,
                 touchAction: 'pan-y',
                 WebkitOverflowScrolling: 'touch',
                 position: 'relative',
-                isolation: 'isolate',
+              }}
+              onWheelCapture={(e) => {
+                const container = chatScrollRef.current;
+                if (!container) return;
+
+                const { scrollTop, scrollHeight, clientHeight } = container;
+                const canScroll = scrollHeight > clientHeight;
+
+                // Если контент не требует скролла, не блокируем событие
+                if (!canScroll) {
+                  return;
+                }
+
+                const isAtTop = scrollTop <= 0;
+                const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+                const scrollingDown = e.deltaY > 0;
+                const scrollingUp = e.deltaY < 0;
+
+                // Если скроллим вниз и уже внизу - позволяем странице скроллиться
+                if (scrollingDown && isAtBottom) {
+                  return;
+                }
+
+                // Если скроллим вверх и уже вверху - позволяем странице скроллиться
+                if (scrollingUp && isAtTop) {
+                  return;
+                }
+
+                // Иначе блокируем всплытие события - скролл происходит нативно в контейнере
+                e.stopPropagation();
+                e.preventDefault();
               }}
             >
               <style>{`
@@ -307,7 +250,7 @@ export function ChatBotWidget() {
                   background-color: #616161;
                 }
               `}</style>
-              <div className="space-y-1 min-h-full">
+              <div className="space-y-1">
                 {messages.map((message) => (
                   <ChatMessage key={message.id} message={message} />
                 ))}
@@ -335,7 +278,7 @@ export function ChatBotWidget() {
                     </div>
                   </motion.div>
                 )}
-                <div ref={messagesEndRef} style={{ height: '1px' }} />
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
