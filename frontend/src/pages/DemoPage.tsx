@@ -43,10 +43,9 @@ export function DemoPage() {
         <section className="mb-24">
           <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100">
             <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden">
-              {/* Замените YOUR_VIDEO_ID на ID вашего YouTube видео */}
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/YOUR_VIDEO_ID?rel=0&modestbranding=1"
+                src="https://www.youtube.com/embed/5ItLLN_iDa4?rel=0&modestbranding=1"
                 title="Демонстрация Transparity Hub"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
